@@ -1,0 +1,18 @@
+{
+  "name": "proximity-pod-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for proximity-verified delivery prototype",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network localhost",
+    "node": "hardhat node"
+  },
+  "keywords": ["blockchain", "proof-of-delivery", "smart-contract"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0"
+  }
+}

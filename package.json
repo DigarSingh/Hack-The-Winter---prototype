@@ -1,0 +1,37 @@
+{
+  "name": "proximity-verified-delivery-prototype",
+  "version": "1.0.0",
+  "description": "A privacy-first, proximity-verified proof-of-delivery prototype with blockchain anchoring",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm run install-contracts && npm run install-backend && npm run install-sim",
+    "install-contracts": "cd contracts && npm install",
+    "install-backend": "cd backend && npm install",
+    "install-sim": "cd sim && npm install",
+    "blockchain": "cd contracts && npx hardhat node",
+    "deploy": "cd contracts && npm run deploy",
+    "backend": "cd backend && npm start",
+    "test:customer": "cd sim && node simulate_customer_activate.js",
+    "test:dp": "cd sim && node simulate_dp_submit.js",
+    "setup": "npm run install-all",
+    "demo": "node scripts/run_demo.js"
+  },
+  "keywords": [
+    "blockchain",
+    "proof-of-delivery",
+    "proximity-verification",
+    "BLE",
+    "smart-contract"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/proximity-verified-delivery-prototype"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "elliptic": "^6.6.1",
+    "ethers": "^6.16.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "proximity-pod-simulators",
+  "version": "1.0.0",
+  "description": "CLI simulation tools for proximity-verified delivery testing",
+  "scripts": {
+    "customer": "node simulate_customer_activate.js",
+    "dp": "node simulate_dp_submit.js"
+  },
+  "keywords": ["simulation", "testing", "cli"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "elliptic": "^6.5.4"
+  }
+}
