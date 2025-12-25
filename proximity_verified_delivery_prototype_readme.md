@@ -1,6 +1,6 @@
 # Proximity-Verified Delivery — Prototype
 
-**Status**: ✅ **FULLY IMPLEMENTED AND TESTED** (December 25, 2025)
+**Status**: **FULLY IMPLEMENTED AND TESTED** (December 25, 2025)
 
 **Short description**: A privacy-first, proximity-verified proof-of-delivery (PoD) prototype that lets a customer temporarily enable a short‑range signal at delivery time. Only an authenticated delivery partner within physical proximity can complete delivery. A tamper-resistant proof (event hash) is anchored on a blockchain for audit and dispute resolution.
 
