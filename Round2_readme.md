@@ -55,7 +55,7 @@ We are building a secure last-mile delivery confirmation system where:
 
 ## Basic System Diagram
 
-![System Diagram](System Diagram.png)
+![System Diagram](System_Diagram.png)
 
 ---
 
@@ -131,31 +131,6 @@ We are building a secure last-mile delivery confirmation system where:
 * Designed customer and delivery partner app flows
 * Implemented proximity logic (BLE / QR)
 * Focused on usability and consent flows
-
----
-
-## Repository Structure
-
-```
-proximity‑verified‑delivery/
-├── README.md
-├── diagrams/
-│   ├── system_architecture.md
-│   ├── flow_diagram.md
-├── backend/
-│   ├── api‑spec.md
-│   └── prototype‑code/
-├── blockchain/
-│   ├── AnchorRegistry.sol
-│   └── README.md
-├── mobile/
-│   ├── customer‑app‑notes.md
-│   └── delivery‑app‑notes.md
-├── research/
-│   ├── threat‑model.md
-│   └── scalability‑notes.md
-└── round2‑roadmap.md
-```
 
 ---
 
