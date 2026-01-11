@@ -1,7 +1,7 @@
 # Final Updates Before React Native Implementation
 
 Date: January 11, 2026
-Author: GitHub Copilot (GPT-5)
+Author: Ayaan Usmani
 
 This document summarizes all changes applied to harden the backend and stabilize tests prior to the React Native implementation, and lists removed assistant-generated docs per request.
 
@@ -45,5 +45,6 @@ This document summarizes all changes applied to harden the backend and stabilize
 
 - Proceed with React Native implementation
 - Keep `.env` out of commits; configure environments in CI/CD
+
 
 
