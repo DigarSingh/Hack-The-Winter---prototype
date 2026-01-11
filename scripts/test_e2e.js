@@ -16,7 +16,8 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const ec = new EC('secp256k1');
 const dpKeyPair = ec.keyFromPrivate('a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456');
 const dpPublicKey = dpKeyPair.getPublic('hex');
-const dpId = 'dp_test_001';
+// Generate unique DP ID for each test run to avoid duplicate registration errors
+const dpId = `dp_test_${Date.now()}`;
 
 console.log('\n' + '='.repeat(70));
 console.log('🚚 Proximity-Verified Delivery - End-to-End Test');

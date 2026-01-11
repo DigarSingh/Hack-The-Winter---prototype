@@ -5,11 +5,31 @@ const elliptic = require('elliptic');
 const db = require('./db');
 const fs = require('fs');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
+// Logging middleware
+const isDev = process.env.NODE_ENV !== 'production';
+app.use(morgan(isDev ? 'dev' : 'combined'));
+
+// Rate limiting: 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+     windowMs: 15 * 60 * 1000,
+     max: 100,
+     message: 'Too many requests from this IP, please try again later',
+     standardHeaders: true,
+     legacyHeaders: false,
+});
+
+// Apply rate limiting to all routes
+app.use(limiter);
+
 const PORT = process.env.PORT || 3000;
+const SIGNER_PRIVATE_KEY = process.env.SIGNER_PRIVATE_KEY || '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 const ec = new elliptic.ec('secp256k1');
 
 // Load deployment info
@@ -29,11 +49,11 @@ async function initBlockchain() {
           contractAddress = deployment.contractAddress;
 
           // Connect to local Hardhat node
-          provider = new ethers.JsonRpcProvider('http://127.0.0.1:8545');
+          const rpcUrl = process.env.RPC_URL || 'http://127.0.0.1:8545';
+          provider = new ethers.JsonRpcProvider(rpcUrl);
 
-          // Use Hardhat's first default account
-          const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
-          wallet = new ethers.Wallet(privateKey, provider);
+          // Use configured signer
+          wallet = new ethers.Wallet(SIGNER_PRIVATE_KEY, provider);
 
           // Load contract ABI
           const artifactPath = path.join(__dirname, '../contracts/artifacts/contracts/AnchorRegistry.sol/AnchorRegistry.json');
@@ -79,6 +99,26 @@ function canonicalizeEvent(eventData) {
 
 function verifySignature(publicKeyHex, message, signatureHex) {
      try {
+          if (!publicKeyHex || typeof publicKeyHex !== 'string') {
+               console.error('Invalid public key: must be a string');
+               return false;
+          }
+
+          if (!signatureHex || typeof signatureHex !== 'string') {
+               console.error('Invalid signature: must be a string');
+               return false;
+          }
+
+          if (!/^[0-9a-fA-F]*$/.test(signatureHex)) {
+               console.error('Invalid signature: must be valid hex string');
+               return false;
+          }
+
+          if (signatureHex.length !== 128) {
+               console.error('Invalid signature length: expected 128 hex chars, got', signatureHex.length);
+               return false;
+          }
+
           const key = ec.keyFromPublic(publicKeyHex, 'hex');
           const msgHash = hashString(message);
           const signature = {
@@ -87,7 +127,7 @@ function verifySignature(publicKeyHex, message, signatureHex) {
           };
           return key.verify(msgHash, signature);
      } catch (error) {
-          console.error('Signature verification error:', error);
+          console.error('Signature verification error:', error.message);
           return false;
      }
 }
@@ -360,20 +400,37 @@ app.post('/api/v1/dp/register', async (req, res) => {
      try {
           const { dp_id, public_key } = req.body;
 
-          if (!dp_id || !public_key) {
-               return res.status(400).json({ error: 'dp_id and public_key required' });
+          if (!dp_id || typeof dp_id !== 'string' || dp_id.trim().length === 0) {
+               return res.status(400).json({ error: 'dp_id must be a non-empty string' });
           }
 
-          // Validate public key format
+          if (!public_key || typeof public_key !== 'string' || public_key.trim().length === 0) {
+               return res.status(400).json({ error: 'public_key must be a non-empty string' });
+          }
+
+          if (!/^[a-zA-Z0-9_-]{1,128}$/.test(dp_id)) {
+               return res.status(400).json({ error: 'dp_id must be alphanumeric (1-128 chars)' });
+          }
+
+          const trimmedKey = public_key.trim();
+          if (!/^[0-9a-fA-F]{130}$/.test(trimmedKey)) {
+               return res.status(400).json({ error: 'public_key must be 130 hex chars (secp256k1 uncompressed)' });
+          }
+
           try {
-               ec.keyFromPublic(public_key, 'hex');
+               ec.keyFromPublic(trimmedKey, 'hex');
           } catch (error) {
                return res.status(400).json({ error: 'Invalid public key format' });
           }
 
-          await db.registerDPKey(dp_id, public_key);
+          const existingKey = await db.getDPKey(dp_id);
+          if (existingKey) {
+               return res.status(409).json({ error: 'DP already registered' });
+          }
 
-          console.log(`✅ DP registered: ${dp_id}`);
+          await db.registerDPKey(dp_id, trimmedKey);
+
+          console.log(`✅ DP registered: ${dp_id} with key ${trimmedKey.slice(0, 20)}...`);
 
           res.json({
                status: 'registered',
@@ -381,7 +438,10 @@ app.post('/api/v1/dp/register', async (req, res) => {
                message: 'Delivery partner registered successfully'
           });
      } catch (error) {
-          console.error('DP registration error:', error);
+          if (error.code === 'SQLITE_CONSTRAINT') {
+               return res.status(409).json({ error: 'DP already registered' });
+          }
+          console.error('DP registration error:', error.message);
           res.status(500).json({ error: 'Internal server error' });
      }
 });
