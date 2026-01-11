@@ -1,0 +1,12 @@
+{
+  "name": "proximity-verified-delivery-mobile",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "shared"
+  ],
+  "scripts": {
+    "bootstrap": "npm install --workspaces"
+  }
+}
