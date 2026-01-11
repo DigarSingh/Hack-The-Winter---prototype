@@ -33,16 +33,6 @@ This document summarizes all changes applied to harden the backend and stabilize
   - Defaults for `NODE_ENV`, `PORT`, `RPC_URL`, `SIGNER_PRIVATE_KEY` (Hardhat test key)
   - Note: Kept out of version control by design
 
-## Files Removed (assistant-generated docs)
-
-- VERIFICATION_SUMMARY.md
-- VERIFICATION_REPORT.md
-- IMPLEMENTATION_COMPLETE.md
-- QUICK_FIX_GUIDE.md
-- REACT_NATIVE_PLAN.md
-
-Reason: Requested cleanup to retain only original documentation files (`readme.md`, `Round2_readme.md`, `SETUP_AND_TESTING.md`).
-
 ## Impact
 
 - Security: Safer signature and parameter validation
@@ -56,6 +46,4 @@ Reason: Requested cleanup to retain only original documentation files (`readme.m
 - Proceed with React Native implementation
 - Keep `.env` out of commits; configure environments in CI/CD
 
-## Commit Message
 
-the updates are mentioned in the new FINAL-UPDATES-BEFORE-REACT-NATIVE-IMPLEMENTATION.md
